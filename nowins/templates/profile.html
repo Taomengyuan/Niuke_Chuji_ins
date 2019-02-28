@@ -59,7 +59,9 @@
                 {% endfor %}
             </div>
             {% if has_next %}
+            <!-- 添加 js-load-more -->
             <div class="more-content js-load-more">
+                <!-- 添加 javascript:void(0); -->
                 <a class="_oidfu" href="javascript:void(0);">更多</a>
             </div>
             {% endif %}
@@ -67,7 +69,7 @@
     </article>
 </div>
 {% endblock%}
-
+ <!-- 添加 js跳转文件 -->
 {% block js %}
 <script type="text/javascript">
     window.uid = {{user.id}};

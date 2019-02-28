@@ -33,10 +33,12 @@ def profile(user_id):
     if user == None:
         return redirect('/')
     # 分页显示，注意不要丢掉filterby，不然profile页面就只是前两张图片
+    # per_page = 3 改成 每页显示3个
     paginate = Image.query.filter_by(user_id=user_id).paginate(page=1, per_page=3)
-
+    # 传输的数据在这里显示
     return render_template('profile.html', user = user,has_next=paginate.has_next,images=paginate.items)
 
+# 跳转提交显示的表单内容
 @app.route('/profile/images/<int:user_id>/<int:page>/<int:per_page>/')
 def user_images(user_id, page, per_page):
     # 参数检查
@@ -49,6 +51,7 @@ def user_images(user_id, page, per_page):
         images.append(imgvo)
     map['images'] = images
     return json.dumps(map)
+# has_next false 表示最后一页，true表示除了最后一页的其余页
 # 输出格式：{"has_next": false, "images": [{"id": 300, "url": "http://images.nowcoder.com/head/672m.png", "comment_count": 3}]}
 
 
@@ -60,7 +63,7 @@ def reglogin():
     for m in get_flashed_messages(with_categories=False, category_filter=['reglogin']):
 
         msg = msg + m
-    # 如果已经登录的就跳到首页或当前页
+    # 如果已经登录的就跳到首页或当前页，使用next参数
     return render_template('login.html',msg=msg,next= request.values.get('next'))
 
 # target是登录页

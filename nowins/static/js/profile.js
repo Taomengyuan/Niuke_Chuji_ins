@@ -18,6 +18,8 @@ $(function () {
         // 初始化数据
         that.uid = window.uid;
         that.page = 1;
+        <!-- 添加js 如果修改成2，则每次点击更多增加显示2个图片-->
+        <!-- 添加js 修改成3 每次点击更多增加显示3个图片-->
         that.pageSize = 3;
         that.listHasNext = true;
         // 绑定事件
