@@ -18,7 +18,7 @@
                     <div class="web-menu">
                     {% if current_user.is_authenticated %}
                     <!-- 如果说这个当前用户时登陆过的，那么显示用户名字  -->
-                        <a class="profile-ico" href="/profile/{{current_user.id}}" title="{{current_user.username}}">{current_user.username}}</a>
+                        <a class="profile-ico" href="/profile/{{current_user.id}}" title="{{current_user.username}}">{{current_user.username}}</a>
                     {% else %}
                         <a class="profile-ico" href="/reglogin">注册/登陆</a>
                     {% endif %}

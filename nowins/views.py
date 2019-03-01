@@ -1,10 +1,12 @@
 # -*- encoding=UTF-8 -*-
 from nowins import app,db
 from nowins.models import Image,User
-from flask import render_template, redirect,request,flash,get_flashed_messages
-import random,hashlib,json
-from flask_login import login_user, logout_user,login_required
-
+from flask import render_template, redirect,request,flash,get_flashed_messages,send_from_directory
+import random,hashlib,json,os
+from flask_login import login_user, logout_user,login_required,current_user
+# from qiniusdk import qiniu_upload_file
+import uuid# 产生唯一识别码，用于给文件名更名
+# 如果使用current_user，那么要确保当前函数是在登陆之后被要求的
 
 @app.route('/')
 def index():
@@ -149,3 +151,61 @@ def reg():
 def logout():
     logout_user()
     return redirect('/')
+
+# 将上传的图片在本地保存,并返回一个可以访问的URL地址
+def save_to_local(file, file_name):
+
+    save_dir = app.config['UPLOAD_DIR']  # 获取根目录
+    file.save(os.path.join(save_dir, file_name))  # 将上一步的根目录与文件名结合保存在本地的文件夹中
+    return '/image/' + file_name  # 返回一个可以访问的URL地址，比如为/image/xxxx.jpeg
+
+
+# 4.上传图片之后，web需要显示；则此处添加一个图片显示函数；
+@app.route('/image/<image_name>')
+def view_image(image_name):
+    # flask中集成了这么一个函数，send_from_directory；当用户直接访问该URL时，就直接显示该目录下的那个图；
+    return send_from_directory(app.config['UPLOAD_DIR'], image_name)
+
+
+
+@app.route('/upload/', methods={"post"})
+@login_required
+def upload():
+    #-------第五节 00:31:00-使用postman检测是否可以返回ok,且查看run的窗口是否显示下行----------#
+    # ------ImmutableMultiDict([('file', <FileStorage: '001.jpg' ('image/jpeg')>)])----#
+    #-------print 的步骤，点击rerun之后，使用postman 输入http://127.0.0.1:5000/upload/，在fromdata页签中上传一张图片 点击send即可，看屏幕下方是否显示ok，显示ok说明交互成功
+    # print(request.files)
+    # file = request.files['file']
+    # print(dir(file)) #['__bool__', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattr__', '__getattribute__', '__gt__', '__hash__', '__init__', '__iter__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__nonzero__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_parse_content_type', 'close', 'content_length', 'content_type', 'filename', 'headers', 'mimetype', 'mimetype_params', 'name', 'save', 'stream']
+    # return 'ok'
+    #-------------------------------------END------------------------------------#
+
+    # 1.将上传的文件的信息通过request请求获取出来，保存在变量file中；files是请求提交过来时里面的一些文件；
+    # []内是上传的文件定义的key名字。如果上传的多变量，比如还有file1,file2等，直接在这个dict里更改即可，可以提取file1,file2.
+    file = request.files['file']
+    # http://werkzeug.pocoo.org/docs/0.10/datastructures/
+    # 需要对文件进行裁剪等操作
+    # 2.将文件后缀名取出存入file_ext变量中；
+    file_ext = ''
+    if file.filename.find('.') > 0:
+        # 后尾去空，转换成小写的进行匹配，文件名后缀
+        file_ext = file.filename.rsplit('.', 1)[1].strip().lower()
+        # 比如为xxx.bmp，则file_ext内容为bmp
+    # 3.将图片提交至服务器之前，先对文件的后缀名做一个验证，看后缀名是否在配置文件允许范围之内;若符合，则将文件保存在服务器，并获得一个URL地址
+    if file_ext in app.config['ALLOWED_EXT']:
+        # 获得文件整体名字，为了防止名字中含有html等干扰信息，选择用一个uuid(通用唯一识别码，就是一个随机值)的方式代替真名字
+        file_name = str(uuid.uuid1()).replace('-', '') + '.' + file_ext
+        # url = qiniu_upload_file(file, file_name)
+        url = save_to_local(file, file_name)
+        # 调用写好的函数，将文件保存在服务器，并获得一个URL地址
+
+        # 4.如果URL存在，则将该图加载到数据库当中
+        if url != None:
+            db.session.add(Image(url, current_user.id))
+            db.session.commit()
+        # current_user.id已登陆的登陆id
+    # # 5.如果上面某几步失败或者全部执行完后，将跳转回当前上传图片的用户的个人详情页去
+    return redirect('/profile/%d' % current_user.id)
+
+# 用户没登录时，会产生以下错误：'AnonymousUserMixin' object has no attribute 'id' // Werkzeug Debugger
+# 你用的是@auth.before_app_request，而且是在未登录之前就请求了。按照flask-login文档，默认情况下，用户没有实际登录的话，current_user会被设置为AnonymousUserMixin对象的。
