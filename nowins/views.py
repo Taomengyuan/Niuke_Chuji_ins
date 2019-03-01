@@ -1,6 +1,6 @@
 # -*- encoding=UTF-8 -*-
 from nowins import app,db
-from nowins.models import Image,User
+from nowins.models import Image,User,Comment
 from flask import render_template, redirect,request,flash,get_flashed_messages,send_from_directory
 import random,hashlib,json,os
 from flask_login import login_user, logout_user,login_required,current_user
@@ -24,8 +24,9 @@ def image(image_id):
     if image == None:
         return redirect('/')
     else:
+        # comments = Comment.query.filter_by(image_id=image_id).order_by(db.desc(Comment.id)).limit(20).all()
         return render_template('pageDetail.html',image=image)
-import pymysql
+
 
 
 @app.route('/profile/<int:user_id>/')
@@ -36,7 +37,8 @@ def profile(user_id):
         return redirect('/')
     # 分页显示，注意不要丢掉filterby，不然profile页面就只是前两张图片
     # per_page = 3 改成 每页显示3个
-    paginate = Image.query.filter_by(user_id=user_id).paginate(page=1, per_page=3)
+    # 加 oderby 来显示最新的三张图片
+    paginate = Image.query.filter_by(user_id = user_id).order_by(Image.id.desc()).paginate(page=1, per_page=3)
     # 传输的数据在这里显示
     return render_template('profile.html', user = user,has_next=paginate.has_next,images=paginate.items)
 
@@ -44,7 +46,7 @@ def profile(user_id):
 @app.route('/profile/images/<int:user_id>/<int:page>/<int:per_page>/')
 def user_images(user_id, page, per_page):
     # 参数检查
-    paginate = Image.query.filter_by(user_id = user_id).paginate(page=page,per_page=per_page)
+    paginate = Image.query.filter_by(user_id = user_id).order_by(Image.id.desc()).paginate(page=page,per_page=per_page)
 
     map = {'has_next':paginate.has_next} # false表示最后一页，true表示还有下一页
     images = []
@@ -182,6 +184,8 @@ def upload():
 
     # 1.将上传的文件的信息通过request请求获取出来，保存在变量file中；files是请求提交过来时里面的一些文件；
     # []内是上传的文件定义的key名字。如果上传的多变量，比如还有file1,file2等，直接在这个dict里更改即可，可以提取file1,file2.
+    print(request.files)
+    # 多个图片：Print 内容ImmutableMultiDict([('file', <FileStorage: 'h5.jpeg' ('image/jpeg')>), ('file', <FileStorage: 'h6.jpeg' ('image/jpeg')>)])
     file = request.files['file']
     # http://werkzeug.pocoo.org/docs/0.10/datastructures/
     # 需要对文件进行裁剪等操作
