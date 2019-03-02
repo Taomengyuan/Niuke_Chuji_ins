@@ -60,6 +60,21 @@ $(function () {
                 var sHtml = '';
                 $.each(oResult.images, function (nIndex, oImage) {
                     sHtml += that.tpl([
+                    //点击“更多”按钮之后，显示的框架格式
+                    // 将profile.html的其中一个单括号改成井号,并把image.去掉即可
+                    //     '<a class="item" href="/image/{{ image.id }}">', // 将其中一个单括号改成井号
+                    //         '<div class="img-box">',
+                    //             '<img src="{{ image.url }}">',
+                    //         '</div>',
+                    //         '<div class="img-mask"></div>',
+                    //         '<div class="interaction-wrap">',
+                    //             <!--评论的长度-->
+                    //             '<div class="interaction-item"><i class="icon-comment"></i> {{ image.comments|length  }}</div>',
+                    //         '</div>',
+                    //     '</a>'].join(''), oImage);
+
+
+
                         '<a class="item" href="/image/#{id}">',
                             '<div class="img-box">',
                                 '<img src="#{url}">',

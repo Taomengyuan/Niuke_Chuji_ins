@@ -16,7 +16,7 @@ $(function () {
         // 常用元素
         that.listEl = $('div.js-image-list1');
         // 初始化数据
-        // that.uid = window.uid;
+        that.uid = window.uid;
         that.page = 1;
         <!-- 添加js 如果修改成2，则每次点击更多增加显示2个图片-->
         <!-- 添加js 修改成3 每次点击更多增加显示3个图片-->
@@ -48,7 +48,7 @@ $(function () {
             return;
         }
         that.requestData({
-            // uid: that.uid,
+            uid: that.uid,
             page: that.page + 1,
             pageSize: that.pageSize,
             call: function (oResult) {
@@ -60,15 +60,53 @@ $(function () {
                 var sHtml = '';
                 $.each(oResult.images, function (nIndex, oImage) {
                     sHtml += that.tpl([
-                        '<a class="item" href="/image/#{id}">',
-                            '<div class="img-box">',
-                                '<img src="#{url}">',
+                       '<article class="mod">',
+                            '<header class="mod-hd">',
+                                '<time class="time">#{username}</time>',
+                                '<a href="/profile/#{user_id}" class="avatar">',
+                                    '<img src="#{image_user_head_url}">',
+                                '</a>',
+                                '<div class="profile-info">',
+                                    '<a title="#{image_user_username}" href="/profile/#{user_id}">#{user_username}</a>',
+                                '</div>',
+                            '</header>',
+                            '<div class="mod-bd">',
+                                '<div class="img-box">',
+                                '<a href="/image/#{id}">',
+                                        '<img src="#{url}">',
+                                '</a>',
+                                '</div>',
                             '</div>',
-                            '<div class="img-mask"></div>',
-                            '<div class="interaction-wrap">',
-                                '<div class="interaction-item"><i class="icon-comment"></i>#{comment_count}</div>',
-                            '</div>',
-                        '</a>'].join(''), oImage);
+                            '<div class="mod-ft">',
+                                '<ul class="discuss-list">',
+                                    '<li class="more-discuss">',
+                                        '<a>',
+                                            '<span>全部 </span><span class="">#{comment_count}</span>',
+                                            '<span> 条评论</span></a>',
+                                    '</li>',
+                        '</article>'].join(''), oImage);
+                        //             '{% for comment in comments %}',
+                        //             '{% if loop.index > 2 %} {% break %} {% endif %}',
+                        //             '<li>',
+                        //                 '<!-- <a class=" icon-remove" title="删除评论"></a> -->',
+                        //                 '<a class="_4zhc5 _iqaka" title="zjuyxy" href="/profile/#{comment.user_id}" data-reactid=".0.1.0.0.0.2.1.2:$comment-17856951190001917.1">#{comment.user.username}</a>',
+                        //                 '<span>',
+                        //                     '<span>#{comment.content}</span>',
+                        //                 '</span>',
+                        //             '</li>',
+                        //             '{%endfor%}',
+                        //
+                        //         '</ul>',
+                        //         '<section class="discuss-edit">',
+                        //             '<a class="icon-heart"></a>',
+                        //             '<form>',
+                        //                 '<input placeholder="添加评论..." type="text">',
+                        //                 '<!--<button class="">提交</button>-->',
+                        //             '</form>',
+                        //             '<button class="more-info">更多选项</button>',
+                        //         '</section>',
+                        //     '</div>',
+                        // '</article>'].join(''), oImage);
                 });
                 sHtml && that.listEl.append(sHtml);
             },
@@ -93,3 +131,53 @@ $(function () {
         });
     }
 });
+
+
+
+// sHtml += that.tpl([
+//    '<article class="mod">',
+//         '<header class="mod-hd">',
+//             '<time class="time">#{image.created_date}</time>',
+//             '<a href="/profile/#{image.user.id}" class="avatar">',
+//                 '<img src="#{image.user.head_url}">',
+//             '</a>',
+//             '<div class="profile-info">',
+//                 '<a title="#{image.user.username}" href="/profile/#{image.user.id}">#{image.user.username}</a>',
+//             '</div>',
+//         '</header>',
+//         '<div class="mod-bd">',
+//             '<div class="img-box">',
+//             '<a href="/image/#{image.id}">',
+//                     '<img src="#{image.url}">',
+//             '</a>',
+//             '</div>',
+//         '</div>',
+//         '<div class="mod-ft">',
+//             '<ul class="discuss-list">',
+//                 '<li class="more-discuss">',
+//                     '<a>',
+//                         '<span>全部 </span><span class="">#{image.comments|length}</span>',
+//                         '<span> 条评论</span></a>',
+//                 '</li>',
+//                 '{% for comment in image.comments %}',
+//                 '{% if loop.index > 2 %} {% break %} {% endif %}',
+//                 '<li>',
+//                     '<!-- <a class=" icon-remove" title="删除评论"></a> -->',
+//                     '<a class="_4zhc5 _iqaka" title="zjuyxy" href="/profile/#{comment.user_id}" data-reactid=".0.1.0.0.0.2.1.2:$comment-17856951190001917.1">#{comment.user.username}</a>',
+//                     '<span>',
+//                         '<span>#{comment.content}</span>',
+//                     '</span>',
+//                 '</li>',
+//                 '{%endfor%}',
+//
+//             '</ul>',
+//             '<section class="discuss-edit">',
+//                 '<a class="icon-heart"></a>',
+//                 '<form>',
+//                     '<input placeholder="添加评论..." type="text">',
+//                     '<!--<button class="">提交</button>-->',
+//                 '</form>',
+//                 '<button class="more-info">更多选项</button>',
+//             '</section>',
+//         '</div>',
+//     '</article>'].join(''), oImage);
