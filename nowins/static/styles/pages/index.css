@@ -7,6 +7,15 @@
     width: 642px;
     margin: 0 auto;
 }
+.more-content {
+    margin: 50px auto 20px;
+    height: 120px;
+    width: 120px;
+    text-align: center;
+    line-height: 120px;
+    border-radius: 50%;
+    border: 2px solid #3897f0;
+}
 
 .mod {
     margin-top: 60px;

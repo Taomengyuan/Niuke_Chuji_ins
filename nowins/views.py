@@ -11,9 +11,32 @@ import uuid# 产生唯一识别码，用于给文件名更名
 @app.route('/')
 def index():
     # return 'hello~~~~~'
-    images = Image.query.order_by(Image.id.desc()).limit(10).all()
-    return render_template('index.html',images=images)
-# import pymysql
+    paginate = Image.query.order_by(Image.id.desc()).paginate(page=1, per_page=3)
+    # paginate = Image.query.filter_by(user_id = user_id).order_by(Image.id.desc()).paginate(page=1, per_page=3)
+    # paginate = Image.query.filter_by(user_id = user_id).order_by(Image.id.desc()).paginate(page=1, per_page=3)
+    # has_next = paginate.has_next, images = paginate.items
+    return render_template('index.html',has_next=paginate.has_next,images=paginate.items)
+
+# 跳转提交显示的表单内容,分页显示
+@app.route('/images/<int:page>/<int:per_page>/')
+def index_images(page, per_page):
+    # 参数检查
+    paginate = Image.query.order_by(Image.id.desc()).paginate(page=page,per_page=per_page)
+
+    map = {'has_next':paginate.has_next} # false表示最后一页，true表示还有下一页
+    images = []
+    for image in paginate.items:
+        imgvo = {'id':image.id, 'url':image.url, 'comment_count': len(image.comments)}
+        images.append(imgvo)
+    map['images'] = images
+    return json.dumps(map)
+# has_next false 表示最后一页，true表示除了最后一页的其余页
+# 输出格式：{"has_next": false, "images": [{"id": 300, "url": "http://images.nowcoder.com/head/672m.png", "comment_count": 3}]}
+
+
+
+
+
 
 @app.route('/image/<int:image_id>/')
 @login_required # 表示只有登陆之后才可使用
@@ -42,7 +65,7 @@ def profile(user_id):
     # 传输的数据在这里显示
     return render_template('profile.html', user = user,has_next=paginate.has_next,images=paginate.items)
 
-# 跳转提交显示的表单内容
+# 跳转提交显示的表单内容,分页显示
 @app.route('/profile/images/<int:user_id>/<int:page>/<int:per_page>/')
 def user_images(user_id, page, per_page):
     # 参数检查
