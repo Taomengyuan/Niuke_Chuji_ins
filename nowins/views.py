@@ -60,7 +60,7 @@ def index_images(page, per_page):
                  'image_user_username': item.user.username,
                  'image_id': item.id,
                  'image_url': item.url,
-                 'image_create_date':str(item.created_date),
+                 'image_created_date':str(item.created_date),
                  'image_comments_length': len(item.comments),
                  'comment_user_username': comment_user_username,
                  'comment_user_id': comment_user_id,
@@ -281,7 +281,7 @@ def upload():
 # Post，它是可以向服务器发送修改请求，从而修改服务器的，比方说，我们要在论坛上回贴、在博客上评论，这就要用到Post了，当然
 # 它也是可以仅仅获取数据的。详情：https://zhidao.baidu.com/question/1759920971069677948.html
 @app.route('/addcomment/', methods={'post'})
-#@login_required
+@login_required
 def add_comment_to_pageDetail():
     # 1.获取Comment实例所需的属性
     image_id = int(request.values['image_id'])

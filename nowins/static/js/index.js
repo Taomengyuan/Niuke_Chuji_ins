@@ -16,7 +16,7 @@ $(function () {
         // 常用元素
         that.listEl = $('div.js-image-list1');
         // 初始化数据
-        that.uid = window.uid;
+        // that.uid = window.uid;
         that.page = 1;
         <!-- 添加js 如果修改成2，则每次点击更多增加显示2个图片-->
         <!-- 添加js 修改成3 每次点击更多增加显示3个图片-->
@@ -48,7 +48,7 @@ $(function () {
             return;
         }
         that.requestData({
-            uid: that.uid,
+            // uid: that.uid,
             page: that.page + 1,
             pageSize: that.pageSize,
             call: function (oResult) {
@@ -108,18 +108,34 @@ $(function () {
 
                     }
 
-                     sHtml += that.tpl([
+                    //  sHtml += that.tpl([
+                    //     '</ul>',
+                    //         '<section class="discuss-edit">',
+                    //             '<a class="icon-heart"></a>',
+                    //             '<form>',
+                    //                 '<input placeholder="添加评论..." type="text">',
+                    //                 '<!--<button class="">提交</button>-->',
+                    //             '</form>',
+                    //             '<button class="more-info">更多选项</button>',
+                    //         '</section>',
+                    //     '</div>',
+                    // '</article>'].join(''), oImage);
+
+
+                    sHtml += that.tpl([
                         '</ul>',
                             '<section class="discuss-edit">',
                                 '<a class="icon-heart"></a>',
                                 '<form>',
-                                    '<input placeholder="添加评论..." type="text">',
+                                    '<input placeholder="添加评论..." id="jsCmt-{{loop.index}}" type="text">',
+                                    '<input id = "js-image-id-{{loop.index}}" type = "text" style="display: none" value="{{image.id}}">',
                                     '<!--<button class="">提交</button>-->',
                                 '</form>',
-                                '<button class="more-info">更多选项</button>',
+                                '<button class="more-info" id="jsSubmit-{{loop.index}}">更多选项</button>',
                             '</section>',
                         '</div>',
-                    '</article>'].join(''), oImage);
+                    '</article>'
+                    ].join(''), oImage);
 
 
 
