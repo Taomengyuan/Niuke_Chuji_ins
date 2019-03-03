@@ -3,10 +3,26 @@ from nowins import app,db
 from nowins.models import Image,User,Comment
 from flask import render_template, redirect,request,flash,get_flashed_messages,send_from_directory
 import random,hashlib,json,os
+from datetime import date, datetime
+
 from flask_login import login_user, logout_user,login_required,current_user
 # from qiniusdk import qiniu_upload_file
 import uuid# 产生唯一识别码，用于给文件名更名
 # 如果使用current_user，那么要确保当前函数是在登陆之后被要求的
+
+class MyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        # if isinstance(obj, datetime.datetime):
+        #     return int(mktime(obj.timetuple()))
+        if isinstance(obj, datetime):
+            return obj.strftime('%Y-%m-%d %H:%M:%S')
+        elif isinstance(obj, date):
+            return obj.strftime('%Y-%m-%d')
+        else:
+            return json.JSONEncoder.default(self, obj)
+
+
+
 
 @app.route('/')
 def index():
@@ -24,18 +40,37 @@ def index_images(page, per_page):
     paginate = Image.query.order_by(Image.id.desc()).paginate(page=page,per_page=per_page)
 
     map = {'has_next':paginate.has_next} # false表示最后一页，true表示还有下一页
-    images = []
-    for image in paginate.items:
-        imgvo = {'id':image.id, 'url':image.url, 'comment_count': len(image.comments)}
-        images.append(imgvo)
-    map['images'] = images
-    return json.dumps(map)
+    # images = []
+    # for image in paginate.items:
+    #     imgvo = {'id':image.id, 'url':image.url, 'comment_count': len(image.comments)}
+    #     images.append(imgvo)
+    image = []
+    for item in paginate.items:
+        # imgvo = {'id':image.id, 'url':image.url, 'comment_count': len(image.comments)}
+        comment_user_username = []
+        comment_user_id = []
+        comment_content = []
+        for comments_i in item.comments:
+            comment_user_username.append(comments_i.user.username)
+            comment_user_id.append(comments_i.user.id)
+            comment_content.append(comments_i.content)
+
+        imgvo = {'image_user_id': item.user.id,
+                 'image_user_head_url': item.user.head_url,
+                 'image_user_username': item.user.username,
+                 'image_id': item.id,
+                 'image_url': item.url,
+                 'image_create_date':str(item.created_date),
+                 'image_comments_length': len(item.comments),
+                 'comment_user_username': comment_user_username,
+                 'comment_user_id': comment_user_id,
+                 'comment_content': comment_content}
+
+        image.append(imgvo)
+    map['images'] = image
+    return json.dumps(map,cls=MyEncoder)
 # has_next false 表示最后一页，true表示除了最后一页的其余页
 # 输出格式：{"has_next": false, "images": [{"id": 300, "url": "http://images.nowcoder.com/head/672m.png", "comment_count": 3}]}
-
-
-
-
 
 
 @app.route('/image/<int:image_id>/')
@@ -235,4 +270,35 @@ def upload():
     return redirect('/profile/%d' % current_user.id)
 
 # 用户没登录时，会产生以下错误：'AnonymousUserMixin' object has no attribute 'id' // Werkzeug Debugger
-# 你用的是@auth.before_app_request，而且是在未登录之前就请求了。按照flask-login文档，默认情况下，用户没有实际登录的话，current_user会被设置为AnonymousUserMixin对象的。
+# 你用的是@auth.before_app_request，而且是在未登录之前就请求了。按照flask-login文档，默认情况下，用户没有实
+# 际登录的话，current_user会被设置为AnonymousUserMixin对象的。
+
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+                图片详情页增加评论
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+# 增加评论的URL，为何用post请求？
+# Post，它是可以向服务器发送修改请求，从而修改服务器的，比方说，我们要在论坛上回贴、在博客上评论，这就要用到Post了，当然
+# 它也是可以仅仅获取数据的。详情：https://zhidao.baidu.com/question/1759920971069677948.html
+@app.route('/addcomment/', methods={'post'})
+#@login_required
+def add_comment_to_pageDetail():
+    # 1.获取Comment实例所需的属性
+    image_id = int(request.values['image_id'])
+    content = request.values['content']
+    # 2.构造comment实例
+    comment = Comment(content, image_id, current_user.id)
+    # 3.将comment该条数据添加到Comment表中
+    db.session.add(comment)
+    db.session.commit()
+    # 4.每页的评论信息存入map中，最终返回json格式用于前端显示
+    return json.dumps\
+    ({
+        "code":0,
+        "id":comment.id,
+        "content":content,
+            # 从users换成user即可运行成功
+        "username":comment.user.username,  # 因为Comment表与User表是多对多，relationship关系；
+        "user_id":comment.user.id
+     })
+    # return json.dumps({"code":0,"id":comment.id})

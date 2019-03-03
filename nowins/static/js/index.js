@@ -62,18 +62,18 @@ $(function () {
                     sHtml += that.tpl([
                        '<article class="mod">',
                             '<header class="mod-hd">',
-                                '<time class="time">#{username}</time>',
-                                '<a href="/profile/#{user_id}" class="avatar">',
+                                '<time class="time">#{image_created_date}</time>',
+                                '<a href="/profile/#{image_user_id}" class="avatar">',
                                     '<img src="#{image_user_head_url}">',
                                 '</a>',
                                 '<div class="profile-info">',
-                                    '<a title="#{image_user_username}" href="/profile/#{user_id}">#{user_username}</a>',
+                                    '<a title="#{image_user_username}" href="/profile/#{image_user_id}">#{image_user_username}</a>',
                                 '</div>',
                             '</header>',
                             '<div class="mod-bd">',
                                 '<div class="img-box">',
-                                '<a href="/image/#{id}">',
-                                        '<img src="#{url}">',
+                                '<a href="/image/#{image_id}">',
+                                        '<img src="#{image_url}">',
                                 '</a>',
                                 '</div>',
                             '</div>',
@@ -81,10 +81,49 @@ $(function () {
                                 '<ul class="discuss-list">',
                                     '<li class="more-discuss">',
                                         '<a>',
-                                            '<span>全部 </span><span class="">#{comment_count}</span>',
+                                                //<!-- 与views中json的参数相对应 -->
+                                            '<span>全部 </span><span class="">#{image_comments_length}</span>',
                                             '<span> 条评论</span></a>',
-                                    '</li>',
-                        '</article>'].join(''), oImage);
+                                    '</li>'].join(''), oImage);
+
+                    //for循环在js中的写法不同
+                    for (var ni = 0; ni < oImage.image_comments_length; ni++) {
+                    // for (var ni = 0; ni < oImage.image_comments_length; ni++) {
+                        dict = {
+                            'comment_user_username': oImage.comment_user_username[ni],
+                            'comment_user_id': oImage.comment_user_id[ni],
+                            'comment_content': oImage.comment_content[ni]
+                        };
+                        //如果评论大于3条，那么就仅显示三条
+                        if(ni>2){break}
+                        sHtml += that.tpl([
+                            '    <li>',
+                            '    <a class="_4zhc5 _iqaka" title="#{comment_user_username}" href="/profile/#{comment_user_id}" data-reactid=".0.1.0.0.0.2.1.2:$comment-17856951190001917.1">#{comment_user_username}</a>',
+                            '    <span>',
+                            '        <span>#{comment_content}</span>',
+                            '     </span>',
+                            '   </li>',
+                        ].join(''), dict);
+
+
+                    }
+
+                     sHtml += that.tpl([
+                        '</ul>',
+                            '<section class="discuss-edit">',
+                                '<a class="icon-heart"></a>',
+                                '<form>',
+                                    '<input placeholder="添加评论..." type="text">',
+                                    '<!--<button class="">提交</button>-->',
+                                '</form>',
+                                '<button class="more-info">更多选项</button>',
+                            '</section>',
+                        '</div>',
+                    '</article>'].join(''), oImage);
+
+
+
+
                         //             '{% for comment in comments %}',
                         //             '{% if loop.index > 2 %} {% break %} {% endif %}',
                         //             '<li>',

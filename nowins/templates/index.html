@@ -27,12 +27,15 @@
                 </div>
                 <div class="mod-ft">
                     <ul class="discuss-list">
-                        <li class="more-discuss">
+                        <li class="more-discuss js-discuss-list">
                             <a>
                                 <span>全部 </span><span class="">{{image.comments|length}}</span>
                                 <span> 条评论</span></a>
                         </li>
-                        {% for comment in image.comments %}
+                        <div class = "js-discuss-list-{{loop.index}}">
+                        </div>
+                        <!--倒序显示评论条数-->
+                        {% for comment in image.comments | reverse %}
                         {% if loop.index > 2 %} {% break %} {% endif %}
                         <li>
                             <!-- <a class=" icon-remove" title="删除评论"></a> -->
@@ -47,10 +50,13 @@
                     <section class="discuss-edit">
                         <a class="icon-heart"></a>
                         <form>
-                            <input placeholder="添加评论..." type="text">
+                            <input placeholder="添加评论..." id="jsCmt-{{loop.index}}" type="text">
+{#                            <input placeholder="添加评论..." id="jsCmt-{{loop.index}}" type="text">#}
+                            <input id = "js-image-id-{{loop.index}}" type = "text" style="display: none" value="{{image.id}}">
+
                             <!--<button class="">提交</button>-->
                         </form>
-                        <button class="more-info">更多选项</button>
+                        <button class="more-info" id="jsSubmit-{{loop.index}}">更多选项</button>
                     </section>
                 </div>
             </article>
@@ -69,9 +75,10 @@
  <!-- 添加 js跳转文件 -->
 {% block js %}
 <script type="text/javascript">
-    window.uid = user.id;
+    window.uid = None;
 </script>
 <script type="text/javascript" src="/static/js/jquery.js"></script>
 <script type="text/javascript" src="/static/js/index.js"></script>
+<script type="text/javascript" src="/static/js/detail_index.js"></script>
 {% endblock%}
 
