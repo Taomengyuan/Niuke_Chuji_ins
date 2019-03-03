@@ -7,6 +7,7 @@ $(function () {
 
     function fInitialize() {
         var that = this;
+        //元素选择器
         var sImageId = window.imageId;
         var oCmtIpt = $('#jsCmt');
         var oListDv = $('ul.js-discuss-list');
@@ -24,6 +25,7 @@ $(function () {
                 return;
             }
             bSubmit = true;
+            //提交的格式
             $.ajax({
                 url: '/addcomment/',
                 type: 'post',

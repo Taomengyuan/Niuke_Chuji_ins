@@ -59,8 +59,8 @@ a .icon-rotate-90:before,a .icon-rotate-180:before,a .icon-rotate-270:before,a .
 .icon-power-off:before,.icon-off:before{content:"\f011";}
 .icon-signal:before{content:"\f012";}
 .icon-gear:before,.icon-cog:before{content:"\f013";}
-.icon-trash:before{content:"\f014";}
-.icon-home:before{content:"\f015";}
+.:before{content:"\f014";}
+.icon-home:beficon-trashore{content:"\f015";}
 .icon-file-alt:before{content:"\f016";}
 .icon-time:before{content:"\f017";}
 .icon-road:before{content:"\f018";}
