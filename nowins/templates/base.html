@@ -18,7 +18,10 @@
                     <div class="web-menu">
                             {% if current_user.is_authenticated %}
                             <!-- 如果说这个当前用户时登陆过的，那么显示用户名字  -->
-                                <a class="profile-ico" href="/profile/{{current_user.id}}" title="{{current_user.username}}">{{current_user.username}}</a>
+{#                                <a class="profile-ico" href="/profile/{{current_user.id}}" title="{{current_user.username}}">{{current_user.username}}</a>#}
+                                <a href="/profile/{{current_user.id}}" class="avatar">
+                                    <img src="{{current_user.head_url}}">
+                                </a>
                                 <a class="room-out" href="/reglogin">logout</a>
 {#                                <button class=" " href="/logout">Out</button>#}
                             {% else %}
@@ -40,12 +43,12 @@
                             <li>
                                 <a href="/about/us/">关于我们</a>
                             </li>
-                            <li>
-                                <a href="https://help.nowcoder.com/">支持</a>
-                            </li>
-                            <li>
-                                <a href="http://blog.nowcoder.com/">博客</a>
-                            </li>
+{#                            <li>#}
+{#                                <a href="https://help.nowcoder.com/">支持</a>#}
+{#                            </li>#}
+{#                            <li>#}
+{#                                <a href="http://blog.nowcoder.com/">博客</a>#}
+{#                            </li>#}
                             <li>
                                 <a href="/press/">新闻中心</a>
                             </li>

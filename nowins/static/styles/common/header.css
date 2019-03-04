@@ -47,3 +47,18 @@
     text-indent: 110%;
     white-space: nowrap;
 }
+
+/*使得header上面的头像圆形框保持一致*/
+.avatar {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    vertical-align: middle;
+    overflow: hidden;
+    border: 1px solid #dbdbdb;
+    margin-right: 5px;
+}
+.avatar img {
+    width: 40px;
+}
