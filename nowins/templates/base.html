@@ -22,7 +22,8 @@
                                 <a href="/profile/{{current_user.id}}" class="avatar">
                                     <img src="{{current_user.head_url}}">
                                 </a>
-                                <a class="room-out" href="/reglogin">logout</a>
+                                <!-- 应该是点击完登出按钮，连接到logout,不是reglogin -->
+                                <a class="room-out" href="/logout">logout</a>
 {#                                <button class=" " href="/logout">Out</button>#}
                             {% else %}
                                 <b>-----------<br></b>

@@ -4,10 +4,39 @@ from nowins import app,db
 from flask_script import Manager
 from nowins.models import User, Image, Comment
 import random
+import unittest
 manager = Manager(app)
 
 def get_image_url():
     return 'http://images.nowcoder.com/head/' + str(random.randint(0, 1000)) + 'm.png'
+
+
+
+# @manager.command
+# def run_test():
+#     tests = unittest.TestLoader().discover('./')
+#     unittest.TextTestRunner().run(tests)
+#     pass
+
+# 在脚本文件manager.py中写run测试函数的入口，可以在命令行中直接执行运行测试函数；
+@manager.command
+def run_test():
+    # 0.跑之前清空/创建一下数据库
+    db.drop_all()
+    db.create_all()
+    # 1.discover指去找xx(这里为./)目录下以test开头的测试文件名，他的入口参数是test*.py，则此处的tests.py就被加载到这里的变量tests中
+
+    # 测试用例存放路径
+    case_path = './'
+    # TestLoader()写法正确，不要漏掉()
+    tests = unittest.TestLoader().discover(case_path)
+    # 2.跑测试用例tests
+    unittest.TextTestRunner().run(tests)
+    '''
+    运行结果可以看出：首先去加载一个测试用例，他会把测试用例tests中test开头的方法来跑，比如这里的test_1,test_2；然后在跑
+    测试用例之前都会先跑一个setUp函数，再跑测试函数，再跑tearDown函数。
+    '''
+    pass
 
 #数据库交互
 @manager.command

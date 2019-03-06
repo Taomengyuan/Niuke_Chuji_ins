@@ -206,8 +206,8 @@ def reg():
         return redirect(next)
     return redirect('/')
 
-
-@app.route('/logout')
+# 忘记加最后的斜杠，test
+@app.route('/logout/')
 def logout():
     logout_user()
     return redirect('/')
